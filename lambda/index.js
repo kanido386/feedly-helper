@@ -5,6 +5,7 @@ const app = express()
 
 app.get('/', (req, res) => {
   console.log('Hi from console!')
+  console.log(`This is ${process.env.SOMETHING}!!!`)
   res.json({ message: 'Hello, Serverless World!' })
 })
 
