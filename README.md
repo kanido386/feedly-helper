@@ -1,12 +1,14 @@
 # feedly-helper
 
 ### To Do
-- Find a way to encode and decode the token
-  - Try out first, might not use this mechanism
 - Maybe can utilize GitHub Pages as FE, and try to call Lambda API
+- Error handling for encrypt and decrypt
+- Express error handling middleware
 - Create API to do what I want to do about the Feedly itself
 
 ### ✅ Done
+- Find a way to encrypt and decrypt the token
+  - Try out first, might not use this mechanism
 - Make sure deploying with .env works fine
 - (express + serverless-http) + AWS Lambda Function URL → a very simple API which can respond something to the caller
 - Can deploy with node-lambda
