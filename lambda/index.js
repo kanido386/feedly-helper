@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const serverless = require('serverless-http')
 const { createCipheriv, createDecipheriv } = require('crypto')
@@ -22,6 +23,12 @@ const decrypt = (encrypted) => {
 }
 
 const app = express()
+app.use(cors())
+// TODO:
+// // Enable CORS only for requests from 'http://localhost:3000'
+// app.use(cors({
+//   origin: 'http://localhost:3000',
+// }))
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
