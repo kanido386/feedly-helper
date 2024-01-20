@@ -1,11 +1,14 @@
 # feedly-helper
 
 ### To Do
+- Copy to clipboard
+- sweetalert2-react-content
+- Find a way to update token since it will be expired in 7 days
 - Error handling for encrypt and decrypt
 - Express error handling middleware
-- Create API to do what I want to do about the Feedly itself
 
 ### ✅ Done
+- Create API to do what I want to do about the Feedly itself
 - Maybe can utilize GitHub Pages as FE, and try to call Lambda API
 - Find a way to encrypt and decrypt the token
   - Try out first, might not use this mechanism

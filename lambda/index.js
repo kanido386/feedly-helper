@@ -3,6 +3,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const serverless = require('serverless-http')
 const { createCipheriv, createDecipheriv } = require('crypto')
+const _ = require('lodash')
+const { getAllUnreadContents } = require('./feedly')
 
 const algorithm = process.env.CRYPTO_ALGORITHM
 const key = Buffer.from(process.env.CRYPTO_KEY, 'hex')
@@ -49,6 +51,17 @@ app.post('/decrypt', (req, res) => {
   const decrypted = decrypt(encrypted)
   console.log(`decrypt ${encrypted} to ${decrypted}`)
   res.json({ message: 'ok' })
+})
+
+app.get('/feedly', async (req, res) => {
+  // All articles from all the feeds the user subscribes to
+  const streamId = encodeURIComponent(`user/${process.env.FEEDLY_USER_ID}/category/global.all`)
+  // const projections = ['title', 'canonicalUrl', 'origin.title']
+  const projections = ['alternate[0].href']
+  const allContents = await getAllUnreadContents(streamId, projections)
+  const urls = _.map(allContents, content => _.get(content, 'alternate[0].href'))
+  const result = _.map(urls, url => `- [${url}](${url})`).join('\n')
+  res.json({ result })
 })
 
 // For local testing
