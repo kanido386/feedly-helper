@@ -1,27 +1,42 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import logo from './logo.svg';
 import './App.css';
+
+const MySwal = withReactContent(Swal)
 
 function App() {
   const [data, setData] = useState([]);
 
   const fetchData = async () => {
+    Swal.fire({
+      title: 'Fetching...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     try {
-      const plainText = 'Hello, world!'
       console.log(process.env.REACT_APP_API_ENDPOINT)
-      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/encrypt`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/feedly`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plainText
-        })
+        }
       });
-      const { encrypted } = await response.json();
-      console.log(`Encrypt ${plainText} to ${encrypted}`);
+      const { result } = await response.json();
+      // console.dir(result, { depth: null });
+      await navigator.clipboard.writeText(result);
+      await MySwal.fire({
+        title: "Copied to the clipboard!",
+        icon: "success"
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
+      alert(JSON.stringify(error))
     }
   };
 
@@ -38,7 +53,7 @@ function App() {
           rel="noopener noreferrer"
           onClick={fetchData}
         >
-          Fetch Data
+          Fetch Feedly & Copy to Clipboard
         </a>
       </header>
     </div>
