@@ -2,11 +2,13 @@
 
 ### To Do
 - Find out why "Copy to clipboard"(?) can't work with phone
+  - Maybe can try the code in: https://stackoverflow.com/a/34046084
 - Find a way to update token since it will be expired in 7 days
 - Error handling for encrypt and decrypt
 - Express error handling middleware
 
 ### ✅ Done
+- Use workaround to build an MVP
 - sweetalert2-react-content
 - Copy to clipboard
 - Create API to do what I want to do about the Feedly itself
