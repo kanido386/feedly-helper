@@ -9,29 +9,70 @@ const puppeteer = require('puppeteer-extra')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 
-async function main() {
-  // Launch the browser and open a new blank page
-  const browser = await puppeteer.launch({ headless: false })
-  const page = await browser.newPage()
+// TODO: not sure this
+const signInWithGoogle = async (page) => {
+  // Click the "Sign in with Google" button
+  await page.waitForSelector('a.auth.primary.google')
+  await page.click('a.auth.primary.google')
 
-  // Navigate the page to a URL
-  await page.goto(process.env.LOGIN_URL, { waitUntil: 'networkidle2' })
+  await page.waitForNavigation({ waitUntil: 'networkidle2' })
 
+  // Input email
   await page.waitForSelector('input[type=email]')
   await page.type('input[type=email]', process.env.EMAIL)
   await page.keyboard.press('Enter')
 
-  // TODO: Can't work:
+  // Input password
+  await page.waitForSelector('input[type=password]', { visible: true }) // https://stackoverflow.com/a/52501934
+  await page.type('input[type=password]', process.env.PASSWORD)
+  await page.keyboard.press('Enter')
+}
+
+// TODO: very similar to signInWithGoogle
+const signInWithEmail = async (page) => {
+  // Click the "Sign in with Email" button
+  await page.waitForSelector('a.auth.primary.feedly')
+  await page.click('a.auth.primary.feedly')
+
   // await page.waitForNavigation({ waitUntil: 'networkidle2' })
-  // await page.waitForSelector('input[type=password]')
-  // await page.type('input[type=password]', process.env.PASSWORD)
-  // await page.keyboard.press('Enter')
 
-  // // Set screen size
-  // await page.setViewport({ width: 1080, height: 1024 })
+  // Input email
+  await page.waitForSelector('input[type=email]')
+  await page.type('input[type=email]', process.env.EMAIL)
+  await page.keyboard.press('Enter')
 
-  // await page.screenshot({ path: 'test.png' })
-  // await browser.close()
+  // Input password
+  await page.waitForSelector('input[type=password]', { visible: true }) // https://stackoverflow.com/a/52501934
+  await page.type('input[type=password]', process.env.PASSWORD)
+  await page.keyboard.press('Enter')
+}
+
+async function main() {
+  const browser = await puppeteer.launch({ headless: false })
+  // const browser = await puppeteer.launch({ headless: true }) // TODO: This one failed...
+  const page = await browser.newPage()
+
+  await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+
+  await page.waitForSelector('a[href="https://feedly.com/i/back"]')
+  await page.click('a[href="https://feedly.com/i/back"]')
+
+  await page.waitForNavigation({ waitUntil: 'networkidle2' })
+  // await signInWithGoogle(page)
+  await signInWithEmail(page)
+
+  await page.waitForNavigation({ waitUntil: 'networkidle2' })
+  // await page.waitForTimeout(5000)
+  await page.waitForSelector('span#header-title')
+  const feedlyToken = await page.evaluate(async () => {
+    console.dir(localStorage, { depth: null })
+    const jsonString = localStorage.getItem('feedly.session')
+    const { feedlyToken } = await JSON.parse(jsonString)
+    return feedlyToken
+  })
+  console.log(`feedlyToken: ${feedlyToken}`)
+
+  await browser.close()
 }
 
 main().catch(err => console.log(err))

@@ -1,13 +1,14 @@
 # feedly-helper
 
 ### To Do
+- Integrate "get feedlyToken" mechanism with the service
 - Find out why "Copy to clipboard"(?) can't work with phone
   - Maybe can try the code in: https://stackoverflow.com/a/34046084
-- Find a way to update token since it will be expired in 7 days
 - Error handling for encrypt and decrypt
 - Express error handling middleware
 
 ### ✅ Done
+- Can get feedlyToken from localStorage with Puppeteer
 - Use workaround to build an MVP
 - sweetalert2-react-content
 - Copy to clipboard
