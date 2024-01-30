@@ -48,11 +48,12 @@ const signInWithEmail = async (page) => {
 }
 
 async function main() {
-  const browser = await puppeteer.launch({ headless: false })
-  // const browser = await puppeteer.launch({ headless: true }) // TODO: This one failed...
+  // const browser = await puppeteer.launch({ headless: false })
+  const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
   const page = await browser.newPage()
 
   await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+  // console.log(await page.content()) // This one is helpful for debugging!
 
   await page.waitForSelector('a[href="https://feedly.com/i/back"]')
   await page.click('a[href="https://feedly.com/i/back"]')
