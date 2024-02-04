@@ -9,7 +9,6 @@ const puppeteer = require('puppeteer-extra')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 
-// TODO: not sure this
 const signInWithGoogle = async (page) => {
   // Click the "Sign in with Google" button
   await page.waitForSelector('a.auth.primary.google')
