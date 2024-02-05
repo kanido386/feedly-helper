@@ -1,7 +1,8 @@
 # feedly-helper
 
 ### To Do
-- [How to Run Puppeteer on AWS Lambda using Layers](https://medium.com/@anuragchitti1103/how-to-run-puppeteer-on-aws-lambda-using-layers-763aea8bed8)
+- Google this: "aws lambda layer puppeteer"
+- It looks cool: [aws-samples / aws-lambda-layer-node-puppeteer-headless-chromium](https://github.com/aws-samples/aws-lambda-layer-node-puppeteer-headless-chromium?tab=readme-ov-file)
 - Integrate "get feedlyToken" mechanism with the service
 - Find out why "Copy to clipboard"(?) can't work with phone
   - Maybe can try the code in: https://stackoverflow.com/a/34046084
