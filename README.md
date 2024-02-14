@@ -1,8 +1,9 @@
 # feedly-helper
 
 ### To Do
-- Google this: "aws lambda layer puppeteer"
-- It looks cool: [aws-samples / aws-lambda-layer-node-puppeteer-headless-chromium](https://github.com/aws-samples/aws-lambda-layer-node-puppeteer-headless-chromium?tab=readme-ov-file)
+- Refresh feedlyToken with [Amazon EventBridge](https://aws.amazon.com/tw/blogs/compute/using-api-destinations-with-amazon-eventbridge/)
+- Tidy up the code
+- [AWS Lambda Layer] Try to do something like [this](https://github.com/aws-samples/aws-lambda-layer-node-puppeteer-headless-chromium/tree/main/src)
 - Integrate "get feedlyToken" mechanism with the service
 - Find out why "Copy to clipboard"(?) can't work with phone
   - Maybe can try the code in: https://stackoverflow.com/a/34046084
@@ -10,6 +11,7 @@
 - Express error handling middleware
 
 ### ✅ Done
+- [@sparticuz/chromium](https://github.com/Sparticuz/chromium/releases/tag/v121.0.0) as a layer in AWS Lambda
 - Can get feedlyToken from localStorage with Puppeteer
 - Use workaround to build an MVP
 - sweetalert2-react-content

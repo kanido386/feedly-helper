@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=local nodemon -r dotenv/config ./index.js",
-    "deploy": "node-lambda deploy -f .env -t 60 -m 128 -u nodejs18.x -o $ARN_LAMBDA",
+    "deploy": "node-lambda deploy -f .env -t 60 -m 1024 -u nodejs18.x -o $ARN_LAMBDA -l $ARN_CHROMIUM_LAYER -x .cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -16,9 +16,13 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "lodash": "^4.17.21",
+    "puppeteer-core": "^21.11.0",
     "serverless-http": "^3.2.0"
   },
   "devDependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "puppeteer": "^22.0.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }
