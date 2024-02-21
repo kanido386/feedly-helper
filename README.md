@@ -11,6 +11,17 @@
 - Express error handling middleware
 
 ### ✅ Done
+- Found payload format to invoke serverless-http lambda
+  ```json
+  {
+    "httpMethod": "POST",
+    "path": "/encrypt",
+    "body": "{\"plainText\":\"abc123\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+  ```
 - [@sparticuz/chromium](https://github.com/Sparticuz/chromium/releases/tag/v121.0.0) as a layer in AWS Lambda
 - Can get feedlyToken from localStorage with Puppeteer
 - Use workaround to build an MVP

@@ -100,6 +100,7 @@ app.get('/', (req, res) => {
 })
 
 app.post('/encrypt', (req, res) => {
+  console.log('request body: %j', req.body)
   const { plainText } = req.body
   const encrypted = encrypt(plainText)
   console.log(`encrypt ${plainText} to ${encrypted}`)
