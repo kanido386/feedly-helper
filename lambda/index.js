@@ -6,9 +6,38 @@ const { createCipheriv, createDecipheriv } = require('crypto')
 const _ = require('lodash')
 const { getAllUnreadContents } = require('./feedly')
 
+const {
+  LambdaClient, GetFunctionConfigurationCommand, UpdateFunctionConfigurationCommand
+} = require("@aws-sdk/client-lambda")
+const client = new LambdaClient({})
+
 const algorithm = process.env.CRYPTO_ALGORITHM
 const key = Buffer.from(process.env.CRYPTO_KEY, 'hex')
 const iv = Buffer.from(process.env.CRYPTO_IV, 'hex')
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/GetFunctionConfigurationCommand/
+const getFunctionEnv = async () => {
+  const input = { FunctionName: process.env.FUNCTION_ARN }
+  const command = new GetFunctionConfigurationCommand(input)
+  // const response = await client.send(command)
+  // console.dir(response, { depth: null })
+  const { Environment: { Variables: variables } } = await client.send(command)
+  return variables
+}
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionConfigurationCommand/
+const updateFunctionEnv = async (updates) => {
+  const env = await getFunctionEnv()
+  // console.dir(env, { depth: null })
+  const input = {
+    FunctionName: process.env.FUNCTION_ARN,
+    Environment: {
+      Variables: { ...env, ...updates }
+    }
+  }
+  const command = new UpdateFunctionConfigurationCommand(input)
+  await client.send(command)
+}
 
 const signInWithEmail = async (page) => {
   // Click the "Sign in with Email" button
@@ -111,6 +140,13 @@ app.post('/decrypt', (req, res) => {
   const { encrypted } = req.body
   const decrypted = decrypt(encrypted)
   console.log(`decrypt ${encrypted} to ${decrypted}`)
+  res.json({ message: 'ok' })
+})
+
+app.post('/updateEnv', async (req, res) => {
+  const { input } = req.body
+  const updates = { SOMETHING: input }
+  await updateFunctionEnv(updates)
   res.json({ message: 'ok' })
 })
 

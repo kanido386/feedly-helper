@@ -11,6 +11,7 @@
 - Express error handling middleware
 
 ### ✅ Done
+- Can modify environment variables of the lambda in the lambda
 - Found payload format to invoke serverless-http lambda
   ```json
   {
