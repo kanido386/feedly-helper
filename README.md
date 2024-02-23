@@ -11,6 +11,8 @@
 - Express error handling middleware
 
 ### ✅ Done
+- Can call `POST /encrypt` API automatically with Amazon EventBridge Scheduler
+  - [Error "The execution role you provide must allow AWS EventBridge Scheduler to assume the role."](https://stackoverflow.com/questions/76091158/error-the-execution-role-you-provide-must-allow-aws-eventbridge-scheduler-to-as)
 - Can modify environment variables of the lambda in the lambda
 - Found payload format to invoke serverless-http lambda
   ```json
