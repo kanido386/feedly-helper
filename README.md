@@ -1,7 +1,6 @@
 # feedly-helper
 
 ### To Do
-- Refresh feedlyToken with [Amazon EventBridge](https://aws.amazon.com/tw/blogs/compute/using-api-destinations-with-amazon-eventbridge/)
 - Tidy up the code
 - [AWS Lambda Layer] Try to do something like [this](https://github.com/aws-samples/aws-lambda-layer-node-puppeteer-headless-chromium/tree/main/src)
 - Integrate "get feedlyToken" mechanism with the service
@@ -11,6 +10,7 @@
 - Express error handling middleware
 
 ### ✅ Done
+- Refresh feedlyToken with [Amazon EventBridge](https://aws.amazon.com/tw/blogs/compute/using-api-destinations-with-amazon-eventbridge/)
 - Can call `POST /encrypt` API automatically with Amazon EventBridge Scheduler
   - [Error "The execution role you provide must allow AWS EventBridge Scheduler to assume the role."](https://stackoverflow.com/questions/76091158/error-the-execution-role-you-provide-must-allow-aws-eventbridge-scheduler-to-as)
 - Can modify environment variables of the lambda in the lambda

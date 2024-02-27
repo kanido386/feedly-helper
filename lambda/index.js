@@ -182,6 +182,10 @@ app.get('/token', async (req, res) => {
   console.log(`feedlyToken: ${feedlyToken}`)
 
   await browser.close()
+
+  const updates = { FEEDLY_ACCESS_TOKEN: feedlyToken }
+  await updateFunctionEnv(updates)
+
   res.json({ message: 'ok' })
 })
 
