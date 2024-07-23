@@ -84,7 +84,7 @@ const launchBrowser = async () => {
     const puppeteer = require('puppeteer-extra')
     const StealthPlugin = require('puppeteer-extra-plugin-stealth')
     puppeteer.use(StealthPlugin())
-    return puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
+    return puppeteer.launch({ headless: false, defaultViewport: { width: 1920, height: 1080 } })
   } else {
     const chromium = require('@sparticuz/chromium')
     const puppeteer = require('puppeteer-core')
@@ -163,10 +163,11 @@ app.get('/token', async (req, res) => {
   const browser = await launchBrowser()
   const page = await browser.newPage()
 
-  await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+  // await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+  await page.goto('https://feedly.com/i/back', { waitUntil: 'networkidle2' })
 
-  await page.waitForSelector('a[href="https://feedly.com/i/back"]')
-  await page.click('a[href="https://feedly.com/i/back"]')
+  // await page.waitForSelector('a[href="https://feedly.com/i/back"]')
+  // await page.click('a[href="https://feedly.com/i/back"]')
 
   await page.waitForNavigation({ waitUntil: 'networkidle2' })
   await signInWithEmail(page)
