@@ -47,15 +47,22 @@ const signInWithEmail = async (page) => {
 }
 
 async function main() {
-  // const browser = await puppeteer.launch({ headless: false })
-  const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
+  const browser = await puppeteer.launch({ headless: false })
+  // const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
   const page = await browser.newPage()
 
   await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
   // console.log(await page.content()) // This one is helpful for debugging!
 
   await page.waitForSelector('a[href="https://feedly.com/i/back"]')
-  await page.click('a[href="https://feedly.com/i/back"]')
+  // await page.click('a[href="https://feedly.com/i/back"]') // Error: Node is either not clickable or not an Element
+  // https://stackoverflow.com/questions/70892717/error-node-is-either-not-clickable-or-not-an-htmlelement-puppeteer-when-i-tri
+  await page.$eval(
+    'a[href="https://feedly.com/i/back"]',
+    (el) => {
+      el.click()
+    }
+  )
 
   await page.waitForNavigation({ waitUntil: 'networkidle2' })
   // await signInWithGoogle(page)
