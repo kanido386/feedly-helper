@@ -9,6 +9,13 @@ const puppeteer = require('puppeteer-extra')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 
+const start = async (options) => {
+  const { connect } = await import('puppeteer-real-browser')
+  // const { page, browser } = await connect(options)
+  // return { page, browser }
+  return connect(options)
+}
+
 const signInWithGoogle = async (page) => {
   // Click the "Sign in with Google" button
   await page.waitForSelector('a.auth.primary.google')
@@ -47,11 +54,15 @@ const signInWithEmail = async (page) => {
 }
 
 async function main() {
-  const browser = await puppeteer.launch({ headless: false })
-  // const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
-  const page = await browser.newPage()
+  // https://www.npmjs.com/package/puppeteer-real-browser
+  const { page, browser } = await start({ headless: false, turnstile: true })
 
-  await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+  // const browser = await puppeteer.launch({ headless: false })
+  // // const browser = await puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
+  // const page = await browser.newPage()
+
+  await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'domcontentloaded' })
+  // await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
   // console.log(await page.content()) // This one is helpful for debugging!
 
   await page.waitForSelector('a[href="https://feedly.com/i/back"]')
@@ -68,6 +79,7 @@ async function main() {
   // await signInWithGoogle(page)
   await signInWithEmail(page)
 
+  // TODO: stuck here
   await page.waitForNavigation({ waitUntil: 'networkidle2' })
   // await page.waitForTimeout(5000)
   await page.waitForSelector('span#header-title')
