@@ -79,10 +79,13 @@ async function main() {
   // await signInWithGoogle(page)
   await signInWithEmail(page)
 
-  // TODO: stuck here
-  await page.waitForNavigation({ waitUntil: 'networkidle2' })
+  console.log('============================== 1')
+  await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
+  // await page.waitForNavigation({ waitUntil: 'networkidle2' })
+  console.log('============================== 2')
   // await page.waitForTimeout(5000)
   await page.waitForSelector('span#header-title')
+  console.log('============================== 3')
   const feedlyToken = await page.evaluate(async () => {
     console.dir(localStorage, { depth: null })
     const jsonString = localStorage.getItem('feedly.session')
