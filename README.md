@@ -1,5 +1,7 @@
 # feedly-helper
 
+test
+
 ### To Do
 - Tidy up the code
 - 串接 OpenAI API 來篩選資訊，省下人工篩選所耗費的時間和精力（可先看有沒有基本的 rule based）
