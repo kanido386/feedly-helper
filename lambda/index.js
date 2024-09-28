@@ -5,6 +5,7 @@ const serverless = require('serverless-http')
 const { createCipheriv, createDecipheriv } = require('crypto')
 const _ = require('lodash')
 const { getAllUnreadContents } = require('./feedly')
+const pageController = require('./pageController');
 
 const {
   LambdaClient, GetFunctionConfigurationCommand, UpdateFunctionConfigurationCommand
@@ -39,18 +40,55 @@ const updateFunctionEnv = async (updates) => {
   await client.send(command)
 }
 
+// const start = async (options) => {
+//   const { connect } = require('./puppeteer-real-browser')
+//   // const { connect } = await import('puppeteer-real-browser')
+//   // FIXME:
+//   // const chromium = require('@sparticuz/chromium')
+//   // chromium.setHeadlessMode = true
+//   // chromium.setGraphicsMode = false
+//   // customConfig = {
+//   //   // args: chromium.args,
+//   //   // defaultViewport: chromium.defaultViewport,
+//   //   // executablePath: await chromium.executablePath(),
+//   //   // headless: chromium.headless,
+//   //   chromePath: await chromium.executablePath()
+//   // }
+//   // console.log('customConfig: %j', customConfig)
+//   // FIXME:
+//   // const { page, browser } = await connect(options)
+//   // return { page, browser }
+//   // FIXME:
+//   // return connect({ customConfig, ...options })
+//   // FIXME:
+//   return connect(options)
+// }
+const start = async () => {
+  const browser = await launchBrowser()
+  let page = await browser.newPage()
+  let pageControllerConfig = { browser, page, turnstile: true }
+  page = await pageController({ ...pageControllerConfig, killProcess: true })
+  return { page, browser }
+}
+
 const signInWithEmail = async (page) => {
   // Click the "Sign in with Email" button
   await page.waitForSelector('a.auth.primary.feedly')
   await page.click('a.auth.primary.feedly')
+
+  console.log('==========')
 
   // Input email
   await page.waitForSelector('input[type=email]')
   await page.type('input[type=email]', process.env.EMAIL)
   await page.keyboard.press('Enter')
 
+  // delay 3 seconds
+  await new Promise(resolve => setTimeout(resolve, 3000))
+
   // Input password
   await page.waitForSelector('input[type=password]', { visible: true }) // https://stackoverflow.com/a/52501934
+  console.log('==========')
   await page.type('input[type=password]', process.env.PASSWORD)
   await page.keyboard.press('Enter')
 }
@@ -87,7 +125,8 @@ const launchBrowser = async () => {
     return puppeteer.launch({ headless: false, defaultViewport: { width: 1920, height: 1080 } })
   } else {
     const chromium = require('@sparticuz/chromium')
-    const puppeteer = require('puppeteer-core')
+    // const puppeteer = require('puppeteer-core')
+    const puppeteer = require('rebrowser-puppeteer-core')
     chromium.setHeadlessMode = true
     chromium.setGraphicsMode = false
     return puppeteer.launch({
@@ -151,8 +190,9 @@ app.post('/updateEnv', async (req, res) => {
 })
 
 app.get('/pageTitle', async (req, res) => {
-  const browser = await launchBrowser()
-  const page = await browser.newPage()
+  // const { page, browser } = await start({ headless: true, turnstile: true })
+  const { page, browser } = await start()
+
   await page.goto('https://www.youtube.com/@kanido386')
   const pageTitle = await page.title()
   await browser.close()
@@ -160,11 +200,11 @@ app.get('/pageTitle', async (req, res) => {
 })
 
 app.get('/token', async (req, res) => {
-  const browser = await launchBrowser()
-  const page = await browser.newPage()
+  // const { page, browser } = await start({ headless: true, turnstile: true })
+  const { page, browser } = await start()
 
   // await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
-  await page.goto('https://feedly.com/i/back', { waitUntil: 'networkidle2' })
+  await page.goto('https://feedly.com/i/back', { waitUntil: 'domcontentloaded' })
 
   // await page.waitForSelector('a[href="https://feedly.com/i/back"]')
   // await page.click('a[href="https://feedly.com/i/back"]')
@@ -172,7 +212,7 @@ app.get('/token', async (req, res) => {
   await page.waitForNavigation({ waitUntil: 'networkidle2' })
   await signInWithEmail(page)
 
-  await page.waitForNavigation({ waitUntil: 'networkidle2' })
+  await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
   await page.waitForSelector('span#header-title')
   const feedlyToken = await page.evaluate(async () => {
     console.dir(localStorage, { depth: null })
