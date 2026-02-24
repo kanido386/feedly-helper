@@ -29,7 +29,8 @@ const getFunctionEnv = async () => {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionConfigurationCommand/
 const updateFunctionEnv = async (updates) => {
   const env = await getFunctionEnv()
-  // console.dir(env, { depth: null })
+  console.dir(updates, { depth: null })
+  console.dir(env, { depth: null })
   const input = {
     FunctionName: process.env.FUNCTION_ARN,
     Environment: {
@@ -184,8 +185,10 @@ app.post('/decrypt', (req, res) => {
 
 app.post('/updateEnv', async (req, res) => {
   const { input } = req.body
-  const updates = { SOMETHING: input }
-  await updateFunctionEnv(updates)
+  // const updates = { SOMETHING: input }
+  const updates = { FEEDLY_ACCESS_TOKEN: input }
+  const resp = await updateFunctionEnv(updates)
+  console.log(resp)
   res.json({ message: 'ok' })
 })
 
