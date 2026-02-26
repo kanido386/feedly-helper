@@ -49,6 +49,6 @@ jobs:
 
           claude_args: |
             --system-prompt "You are assisting with the Feedly Helper project. The frontend is a React app (Create React App) running at http://localhost:3000. It has a single Fetch button that calls the backend Lambda API to retrieve unread Feedly articles, then displays them as a clickable list. Use Playwright MCP tools to navigate, inspect, and interact with the UI when visual verification is needed."
-            --mcp-config '{"mcpServers":{"playwright":{"command":"npx","args":["@playwright/mcp@latest","--headless"]}}}'
+            --mcp-config .github/playwright-mcp-config.json
             --allowedTools mcp__playwright__browser_navigate,mcp__playwright__browser_navigate_back,mcp__playwright__browser_snapshot,mcp__playwright__browser_click,mcp__playwright__browser_take_screenshot,mcp__playwright__browser_wait_for,mcp__playwright__browser_type,mcp__playwright__browser_fill_form,mcp__playwright__browser_evaluate,mcp__playwright__browser_hover,mcp__playwright__browser_drag,mcp__playwright__browser_select_option,mcp__playwright__browser_console_messages,mcp__playwright__browser_network_requests,mcp__playwright__browser_press_key,mcp__playwright__browser_handle_dialog,mcp__playwright__browser_resize,mcp__playwright__browser_tabs,mcp__playwright__browser_file_upload,mcp__playwright__browser_run_code,mcp__playwright__browser_close,mcp__playwright__browser_install
 
