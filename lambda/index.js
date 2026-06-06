@@ -240,7 +240,7 @@ app.get('/feedly', async (req, res) => {
   const projections = ['alternate[0].href']
   const allContents = await getAllUnreadContents(streamId, projections)
   const urls = _.map(allContents, content => _.get(content, 'alternate[0].href'))
-  const result = _.map(urls, url => `- [${url}](${url})`).join('\n')
+  const result = _.map([...urls].reverse(), url => `- [${url}](${url})`).join('\n')
   res.json({ result })
 })
 
