@@ -5,6 +5,7 @@ const serverless = require('serverless-http')
 const { createCipheriv, createDecipheriv } = require('crypto')
 const _ = require('lodash')
 const { getAllUnreadContents } = require('./feedly')
+const pageController = require('./pageController');
 
 const {
   LambdaClient, GetFunctionConfigurationCommand, UpdateFunctionConfigurationCommand
@@ -28,7 +29,8 @@ const getFunctionEnv = async () => {
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionConfigurationCommand/
 const updateFunctionEnv = async (updates) => {
   const env = await getFunctionEnv()
-  // console.dir(env, { depth: null })
+  console.dir(updates, { depth: null })
+  console.dir(env, { depth: null })
   const input = {
     FunctionName: process.env.FUNCTION_ARN,
     Environment: {
@@ -39,18 +41,55 @@ const updateFunctionEnv = async (updates) => {
   await client.send(command)
 }
 
+// const start = async (options) => {
+//   const { connect } = require('./puppeteer-real-browser')
+//   // const { connect } = await import('puppeteer-real-browser')
+//   // FIXME:
+//   // const chromium = require('@sparticuz/chromium')
+//   // chromium.setHeadlessMode = true
+//   // chromium.setGraphicsMode = false
+//   // customConfig = {
+//   //   // args: chromium.args,
+//   //   // defaultViewport: chromium.defaultViewport,
+//   //   // executablePath: await chromium.executablePath(),
+//   //   // headless: chromium.headless,
+//   //   chromePath: await chromium.executablePath()
+//   // }
+//   // console.log('customConfig: %j', customConfig)
+//   // FIXME:
+//   // const { page, browser } = await connect(options)
+//   // return { page, browser }
+//   // FIXME:
+//   // return connect({ customConfig, ...options })
+//   // FIXME:
+//   return connect(options)
+// }
+const start = async () => {
+  const browser = await launchBrowser()
+  let page = await browser.newPage()
+  let pageControllerConfig = { browser, page, turnstile: true }
+  page = await pageController({ ...pageControllerConfig, killProcess: true })
+  return { page, browser }
+}
+
 const signInWithEmail = async (page) => {
   // Click the "Sign in with Email" button
   await page.waitForSelector('a.auth.primary.feedly')
   await page.click('a.auth.primary.feedly')
+
+  console.log('==========')
 
   // Input email
   await page.waitForSelector('input[type=email]')
   await page.type('input[type=email]', process.env.EMAIL)
   await page.keyboard.press('Enter')
 
+  // delay 3 seconds
+  await new Promise(resolve => setTimeout(resolve, 3000))
+
   // Input password
   await page.waitForSelector('input[type=password]', { visible: true }) // https://stackoverflow.com/a/52501934
+  console.log('==========')
   await page.type('input[type=password]', process.env.PASSWORD)
   await page.keyboard.press('Enter')
 }
@@ -84,10 +123,11 @@ const launchBrowser = async () => {
     const puppeteer = require('puppeteer-extra')
     const StealthPlugin = require('puppeteer-extra-plugin-stealth')
     puppeteer.use(StealthPlugin())
-    return puppeteer.launch({ headless: true, defaultViewport: { width: 1920, height: 1080 } })
+    return puppeteer.launch({ headless: false, defaultViewport: { width: 1920, height: 1080 } })
   } else {
     const chromium = require('@sparticuz/chromium')
-    const puppeteer = require('puppeteer-core')
+    // const puppeteer = require('puppeteer-core')
+    const puppeteer = require('rebrowser-puppeteer-core')
     chromium.setHeadlessMode = true
     chromium.setGraphicsMode = false
     return puppeteer.launch({
@@ -145,14 +185,17 @@ app.post('/decrypt', (req, res) => {
 
 app.post('/updateEnv', async (req, res) => {
   const { input } = req.body
-  const updates = { SOMETHING: input }
-  await updateFunctionEnv(updates)
+  // const updates = { SOMETHING: input }
+  const updates = { FEEDLY_ACCESS_TOKEN: input }
+  const resp = await updateFunctionEnv(updates)
+  console.log(resp)
   res.json({ message: 'ok' })
 })
 
 app.get('/pageTitle', async (req, res) => {
-  const browser = await launchBrowser()
-  const page = await browser.newPage()
+  // const { page, browser } = await start({ headless: true, turnstile: true })
+  const { page, browser } = await start()
+
   await page.goto('https://www.youtube.com/@kanido386')
   const pageTitle = await page.title()
   await browser.close()
@@ -160,18 +203,19 @@ app.get('/pageTitle', async (req, res) => {
 })
 
 app.get('/token', async (req, res) => {
-  const browser = await launchBrowser()
-  const page = await browser.newPage()
+  // const { page, browser } = await start({ headless: true, turnstile: true })
+  const { page, browser } = await start()
 
-  await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+  // await page.goto(process.env.HOMEPAGE_URL, { waitUntil: 'networkidle2' })
+  await page.goto('https://feedly.com/i/back', { waitUntil: 'domcontentloaded' })
 
-  await page.waitForSelector('a[href="https://feedly.com/i/back"]')
-  await page.click('a[href="https://feedly.com/i/back"]')
+  // await page.waitForSelector('a[href="https://feedly.com/i/back"]')
+  // await page.click('a[href="https://feedly.com/i/back"]')
 
   await page.waitForNavigation({ waitUntil: 'networkidle2' })
   await signInWithEmail(page)
 
-  await page.waitForNavigation({ waitUntil: 'networkidle2' })
+  await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
   await page.waitForSelector('span#header-title')
   const feedlyToken = await page.evaluate(async () => {
     console.dir(localStorage, { depth: null })
@@ -196,7 +240,7 @@ app.get('/feedly', async (req, res) => {
   const projections = ['alternate[0].href']
   const allContents = await getAllUnreadContents(streamId, projections)
   const urls = _.map(allContents, content => _.get(content, 'alternate[0].href'))
-  const result = _.map(urls, url => `- [${url}](${url})`).join('\n')
+  const result = _.map([...urls].reverse(), url => `- [${url}](${url})`).join('\n')
   res.json({ result })
 })
 

@@ -2,6 +2,7 @@
 
 ### To Do
 - Tidy up the code
+- 串接 OpenAI API 來篩選資訊，省下人工篩選所耗費的時間和精力（可先看有沒有基本的 rule based）
 - [AWS Lambda Layer] Try to do something like [this](https://github.com/aws-samples/aws-lambda-layer-node-puppeteer-headless-chromium/tree/main/src)
 - Integrate "get feedlyToken" mechanism with the service
 - Find out why "Copy to clipboard"(?) can't work with phone
@@ -10,6 +11,7 @@
 - Express error handling middleware
 
 ### ✅ Done
+- Can bypass Cloudflare Turnstile (credit to [zfcsoftware/puppeteer-real-browser](https://github.com/zfcsoftware/puppeteer-real-browser))
 - Refresh feedlyToken with [Amazon EventBridge](https://aws.amazon.com/tw/blogs/compute/using-api-destinations-with-amazon-eventbridge/)
 - Can call `POST /encrypt` API automatically with Amazon EventBridge Scheduler
   - [Error "The execution role you provide must allow AWS EventBridge Scheduler to assume the role."](https://stackoverflow.com/questions/76091158/error-the-execution-role-you-provide-must-allow-aws-eventbridge-scheduler-to-as)
